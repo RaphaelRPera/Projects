@@ -7,6 +7,7 @@ import { getUser } from '../store/User/User.actions'
 export const useProtectPage = () => {
     const location = useLocation()
     const page = location.pathname
+    // console.log(`useProtectPage (${page})`)
     const history = useHistory()
     const dispatch = useDispatch()
     // dispatch(getUser())

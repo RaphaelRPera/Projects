@@ -49,7 +49,7 @@ class UserBusiness {
             if (!passwordIsCorrect) {throw new CustomError(400, 'Invalid email or password')}
 
             const token:string = services.generateToken({id: user.id, role: user.role})
-            console.log(`[userBusiness]: [login]: [user]:`, user)
+            // console.log(`[userBusiness]: [login]: [user]:`, user)
             // return token
             return {nickname: user.nickname, token}
         } catch (error) {

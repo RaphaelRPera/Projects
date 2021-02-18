@@ -1,8 +1,8 @@
 import express, {Express} from 'express'
-import { userRouter, imageRouter } from './router/router'
+import { userRouter, imageRouter } from './src/router/router'
 import cors from 'cors'
 import dotenv from 'dotenv'
-import { createTables } from './services/mySqlSetup'
+import { createTables } from './src/services/mySqlSetup'
 dotenv.config()
 
 

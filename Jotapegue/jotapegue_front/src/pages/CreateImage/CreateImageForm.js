@@ -59,10 +59,10 @@ export const CreateImageForm = () => {
                     setIsLoading(false)
                     switch (response.status) {
                         case 409:
-                            setAlert({active: true, type:'error', message:'* Imagem já cadastrada'}); break;
+                            setAlert({active: true, type:'error', message:'* Imagem já cadastrada'}); setIsLoading(false); break;
                         case 200:
-                            setAlert({active: true, type:'success', message:'Imagem cadastrada com sucesso'}); setForm(formState); break;
-                        default: setAlert({active: true, type:'error', message:'* Erro ao cadastrar imagem'}); break;
+                            setAlert({active: true, type:'success', message:'Imagem adicionada com sucesso'}); setIsLoading(false); setForm(formState); break;
+                        default: setAlert({active: true, type:'error', message:'* Erro ao cadastrar imagem'}); setIsLoading(false); break;
                     }
                 }
             )

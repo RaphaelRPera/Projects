@@ -57,7 +57,7 @@ class ImageData extends BaseDataBase {
 
             switch (error.code) {
                 case "ER_DUP_ENTRY":
-                    console.log(`[data]: [createImageTag]: error`, error.code); break;
+                    /*console.log(`[data]: [createImageTag]: error`, error.code)*/; break;
                     // throw new CustomError(403, 'ImageTag already exists'); break;
                 default:
                     // console.log(`[data]: [createImageTag]: error`, error.code);
@@ -136,7 +136,7 @@ class ImageData extends BaseDataBase {
             return queryResult[0]
         } catch (error) {
             const {code, statusCode, message} = error
-            console.log(`[imageData]: [getImageAll]: [error]:`, error.code, error)
+            // console.log(`[imageData]: [getImageAll]: [error]:`, error.code, error)
             throw new CustomError(statusCode, message)
         }
     }
@@ -177,7 +177,7 @@ class ImageData extends BaseDataBase {
             return `[imageData]: [deleteImage]: [RETURN]`
         } catch (error) {
             const {code, message, statusCode} = error
-            console.log(`[imageData]: [deleteImage]: [error]:`, code, message)
+            // console.log(`[imageData]: [deleteImage]: [error]:`, code, message)
             throw new CustomError(statusCode, message)
         }
     }
@@ -192,7 +192,7 @@ class ImageData extends BaseDataBase {
             return `[imageData]: [deleteImageTag]: [RETURN]`
         } catch (error) {
             let {code, message} = error
-            console.log(`[imageData]: [deleteImageTag]: [error]:`, code, message)
+            // console.log(`[imageData]: [deleteImageTag]: [error]:`, code, message)
             let statusCode = 400
             if (code === `ER_BAD_FIELD_ERROR`) {
                 statusCode = 500

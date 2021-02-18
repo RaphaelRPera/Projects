@@ -1,12 +1,12 @@
 import React from 'react';
-import logo from './logo.svg';
+// import logo from './logo.svg';
 import './App.css';
-import { ComponenteTela } from './components/ComponenteTela/ComponenteTela.js';
+import { AppContainer } from './components/AppContainer/AppContainer.js';
 
 function App() {
   return (
     <div className="App">
-        <ComponenteTela></ComponenteTela>
+        <AppContainer/>
     </div>
   )
 }

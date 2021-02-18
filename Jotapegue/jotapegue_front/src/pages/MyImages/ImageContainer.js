@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useHistory } from 'react-router-dom'
-import { protectPage } from '../../hooks/protectPage'
+// import { protectPage } from '../../hooks/protectPage'
 import { getImageAll } from '../../services/image'
 import { ImageCard } from './ImageCard'
 import { ImageModal } from './ImageModal'
@@ -15,7 +15,8 @@ import { removeAcento } from '../../hooks/RemoveAcento'
 export const ImageContainer = () => {
     const history = useHistory()
 
-    const [imagesBd, setImagesBd] = useState()
+    const [imagesBd, setImagesBd] = useState(0)
+    // const [imagesBd, setImagesBd] = useState([])
     const [modal, setModal] = useState({open:false, index: undefined})
     const [imageOrder, setImageOrder] = useState('desc')
     const searchText = useSelector(state => state.searchBar)
@@ -24,20 +25,22 @@ export const ImageContainer = () => {
     const getImages = async () => {
         // console.log('getting images...')
         await getImageAll()
-            .then(response => {              
+            .then(response => {           
                 switch (response.status) {
-                    case 200: /*console.log('getImages:', response.data);*/ setImagesBd(response.data); break;
-                    case 401: console.log(`[ImageContainer]: 401 Acesso não autorizado`); protectPage('myImages', history) ;break;
-                    case 400: console.log(`[ImageContainer]: 400 Acesso não autorizado`); break;
-                    case 404: console.log(`[ImageContainer]: 404 Nenhuma imagem`); setImagesBd(null); break;
+                    case 200: response.data.length ? setImagesBd(response.data) : setImagesBd(undefined); break;
+                    case 401: /*console.log(`[ImageContainer]: 401 Acesso não autorizado`);*/ setImagesBd(undefined); break;
+                    case 400: /*console.log(`[ImageContainer]: 400 Acesso não autorizado`);*/ setImagesBd(undefined); break;
+                    case 404: /*console.log(`[ImageContainer]: 404 Nenhuma imagem`)*/; setImagesBd(undefined); break;
                     default: console.log(`[ImageContainer]: [response]:`, response); break;
                 }
                 // console.log('getting images... DONE!')
             })
+        // clearTimeout(getImagesCounter)
     }
 
 
-    let images = []
+    // let images = []
+    let images
     let imageList = []
     if (imagesBd) {
         for (let i = 0; i < imagesBd.length; i++) {
@@ -48,14 +51,16 @@ export const ImageContainer = () => {
                 imageList.push(imageId)
                 const newImage = {...image, date: new Date(image.date), tags: [image.tag]}
                 delete newImage.tag
-                images.push(newImage)
+                // images.push(newImage)
+                images = images ? [...images, newImage] : [newImage]
             } else {
                 images[listIndex].tags.push(image.tag)
             }
         }
     }
     
-    if (images.length) {
+    // if (images.length) {
+    if (images) {
         if (imageOrder === 'desc') {
             images.sort((a, b) => {
                 return a.date > b.date ? -1 : a.date < b.date ? 1 : 0
@@ -67,8 +72,10 @@ export const ImageContainer = () => {
         }
     }
 
+    if (images) {console.log(images)}
 
-    const cards = images.length && images.map((image, index) => {
+    // const cards = images.length && images.map((image, index) => {
+    const cards = images && images.map((image, index) => {
         const collection = removeAcento(image.collection.toLowerCase())
         const subtitle = removeAcento(image.subtitle.toLowerCase())
         const tags = image.tags
@@ -90,28 +97,37 @@ export const ImageContainer = () => {
         }
     })
 
-
     const searchBar = <SearchBar placeholder='título, coleção, tag...' />
 
-    useEffect(() => {
-        setTimeout(()  => {
-            getImages()
-        }, 1000)
-    })
-
-
-    return (
-        <PageContainer>
-            {imagesBd === null && <NoImage/>}
-            {/* {imagesBd === undefined && <LoadingImages/>} */}
-            {imagesBd === undefined && <Loading/>}
-            {imagesBd && searchBar}
-            {imagesBd &&
+    const pageContent =
+        // imagesBd === false ?
+        imagesBd === 0 ?
+            <Loading/>
+        :
+        imagesBd === undefined ?
+            <NoImage/>
+        :
+            <>
+                {searchBar}
                 <ImagesContainer>
                     {modal.open && <ImageModal images={images} setModal={setModal} index={modal.index} />}
                     {cards ? cards : 'Nenhuma imagem'}
                 </ImagesContainer>
-            }
+            </>
+
+
+    // let getImagesCounter
+    useEffect(() => {
+        // getImagesCounter = setTimeout(()  => {
+        //     getImages()
+        // }, 1000)
+        getImages()
+    }, [])
+    
+
+    return (
+        <PageContainer>
+            {pageContent}
         </PageContainer>
     )
 }

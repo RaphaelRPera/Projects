@@ -1,152 +1,68 @@
-import React from 'react';
-import styled from 'styled-components';
-import { CompMensagem } from '../CompMensagem/CompMensagem';
-import { CompMensagemEu } from '../CompMensagemEu/CompMensagemEu';
+import React, { useState } from 'react';
+import { FormContainer, FormMsg, SendButton, SendImg } from './style'
+import sendIcon2 from '../../img/icons8-paper-plane-100_white.png'
+import { useDispatch, useSelector } from 'react-redux';
+import { setMsgValue } from '../../store/Message/Message.actions'
+import { removeAcento } from '../RemoveAcento/RemoveAcento';
+import fixedResponses from './fixedResponses'
 
 
-const FormDiv = styled.div`
-    max-height: 100%;
-`
 
-const ListaBaloes = styled.div`
-  margin: 0 0 20px 0;
-  padding: 20px 0 0 0;
-  max-height: calc(100vh - 97px);
-  overflow: auto;
-  overflow-x:hidden;
-`
+export const Formulario = () => {
+    const [msg, setMsg] = useState('')
+    const messages = useSelector(state => state.messages)
+    const darkMode= useSelector(state => state.darkMode)
+    const dispatch = useDispatch()
 
-const FormStyle = styled.div`
-    display: flex;
-    justify-content: center;
-    height: 40px;
-    margin: 15px 0;
-`
-const FormUsuario = styled.input`
-    margin-right: 20px;
-    padding: 0 0 0 5px;
-    width: 100px;
-    border: none;
-    border-radius: 7px;
-    box-shadow: 0 2px 1px rgb(200,200,200);
-    outline: none;
-`
-const FormMsg = styled.input`
-    margin-right: 20px;
-    padding: 0 5px;
-    width: 250px;
-    border: none;
-    border-radius: 7px;
-    box-shadow: 0 2px 1px rgb(200,200,200);
-    outline: none;
-    word-wrap: break-word;
-`
+    const handleInput = (event) => {setMsg(event.target.value)}
 
-const Button = styled.button`
-    width: 80px;
-    background-color: orange;
-    color: white;
-    font-size: 15px;
-    font-weight: bold;
-    border: none;
-    border-radius: 7px;
-    box-shadow: 0 2px 1px rgb(200,200,200);
-    outline: none;
-`
+    const handleKeyDown = (event) => {event.key === 'Enter' && handleSubmit()}
 
+    const handleSubmit = () => {
+        const msgText = msg.length ? msg : `Olá Raphael`
+        const newMsg = {user: 'me', msg: msgText}
 
-export class Formulario extends React.Component {
+        if (removeAcento(msgText.toLowerCase()) === 'Ola Raphael'.toLowerCase()) {
+            dispatch(setMsgValue([...messages, newMsg]))
+            
+            let responses = []
+            let counter = 0
+            const flux = setInterval(() => {
+                responses.push(fixedResponses[counter])
+                dispatch(setMsgValue([...messages, newMsg, ...responses]))
+                counter++
+                if (counter > fixedResponses.length - 1) {clearInterval(flux)}
+            }, 2000)
 
-  state = {
-    formulario: [],
-    valorInputUsuario: "",
-    valorInputMensagem: "",
-    mensagemID: 0,
-  };
+        } else if (removeAcento(msgText.toLowerCase()).indexOf('parabens'.toLowerCase()) >= 0) {
+            const response = {user: 'Raphael', msg: 'Obrigado!'}
+            dispatch(setMsgValue([...messages, newMsg]))
+            setTimeout(() => dispatch(setMsgValue([...messages, newMsg, response])), 1500)
 
-    adicionaBalao = () => {
-        if (this.state.valorInputUsuario !== '' && this.state.valorInputMensagem !== '') {
-            this.setState({mensagemID: this.state.mensagemID + 1})
-            const novaMensagem = {
-                id: this.state.mensagemID,
-                usuario: this.state.valorInputUsuario,
-                mensagem: `${this.state.valorInputMensagem}`
-            }
-            const novoMensagens = [...this.state.formulario, novaMensagem]
-            this.setState({ formulario: novoMensagens, valorInputUsuario:'', valorInputMensagem:''})
+        } else {
+            const response = {user: 'Raphael', msg: 'Que bom! :)'}
+            dispatch(setMsgValue([...messages, newMsg]))
+            setTimeout(() => dispatch(setMsgValue([...messages, newMsg, response])), 1500)
         }
+
+        setMsg('')
     }
 
-      
-    onChangeInputUsuario = (event) => {
-        this.setState({ valorInputUsuario: event.target.value });
-    };
+    return (
+        <FormContainer>
+            <FormMsg
+                darkMode={darkMode}
+                // placeholder={'Mensagem'}
+                placeholder={"Diga 'Olá Raphael'"}
+                value={msg}
+                onChange={handleInput}
+                onKeyDown={handleKeyDown}
+            />
 
-    onChangeInputMensagem = (event) => {
-        this.setState({ valorInputMensagem: event.target.value });
-    };
-
-    onKeyDownForm = (event) => {
-        if (event.key === `Enter`) {
-            console.log(`msg key: ${event.key}`)
-            this.adicionaBalao()
-        }
-    }
-
-    onDoubleClickDelete = (id) => {
-        const novoFormulario = this.state.formulario.filter(msgbox =>{
-            if (msgbox.id === id) {
-                return false
-            } else {
-                return true
-            }
-        })
-
-        this.setState({ formulario: novoFormulario })
-        console.log(`mensagem (id:${id}) apagada`)
-    }
-
-    render() {
-        let listaDeBaloes
-        if (this.state.formulario.length > 0) {
-            listaDeBaloes = this.state.formulario.map((formulario) => {
-                let compMensagemTemp
-                if (formulario.usuario === 'eu') {
-                    compMensagemTemp = 
-                        <CompMensagemEu
-                            nomeUser={formulario.usuario}
-                            mensagem = {formulario.mensagem}
-                            doubleClickFunc = {() => this.onDoubleClickDelete(formulario.id)}
-                        />
-                } else {
-                    compMensagemTemp = 
-                        <CompMensagem
-                            nomeUser={formulario.usuario}
-                            mensagem = {formulario.mensagem}
-                            doubleClickFunc = {() => this.onDoubleClickDelete(formulario.id)}
-                        />
-                }
-                return (compMensagemTemp);
-            });
-        }
-        
-        return (
-            <FormDiv>
-                <ListaBaloes>{listaDeBaloes}</ListaBaloes>
-                <FormStyle onKeyDown={this.onKeyDownForm}>
-                    <FormUsuario
-                    value={this.state.valorInputUsuario}
-                    onChange={this.onChangeInputUsuario}
-                    placeholder={"Usuário"}
-                    />
-                    <FormMsg
-                    value={this.state.valorInputMensagem}
-                    onChange={this.onChangeInputMensagem}
-                    placeholder={"Mensagem"}
-                    />
-                    <Button onClick={this.adicionaBalao}>Enviar</Button>
-                </FormStyle>
-            </FormDiv>  
-        );
-    }
+            <SendButton onClick={handleSubmit} darkMode={darkMode}>
+                <SendImg src={sendIcon2} />
+            </SendButton>
+        </FormContainer>
+    )
 }
+

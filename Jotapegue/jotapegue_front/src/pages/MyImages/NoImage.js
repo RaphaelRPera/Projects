@@ -10,7 +10,7 @@ export const NoImage = () => {
             </Paragraph>
 
             <Paragraph>
-                Adicione-as clicando no botão "+imagem" no topo da página
+                Adicione-as clicando no botão "adicionar" no topo da página
             </Paragraph>
         </PageContainer>
     )

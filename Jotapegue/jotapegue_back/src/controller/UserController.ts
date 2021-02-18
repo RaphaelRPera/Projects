@@ -42,7 +42,7 @@ class UserController {
             const token = req.headers.authorization
             if (!token) {throw new CustomError(401, 'Unauthorized')}
             const user = await userBusiness.validateUser(token)
-            console.log('Controller: validateUser: user:', user)
+            // console.log('Controller: validateUser: user:', user)
             // res.status(200).send({message: 'Authorized'})
             res.status(200).send({name: user?.name, nickname: user?.nickname, role: user?.role})
         } catch (error) {

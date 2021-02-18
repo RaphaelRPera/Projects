@@ -9,7 +9,7 @@ import { UserRole } from '../model/User'
 
 class ImageBusiness {
     public createImage = async (data: any):Promise<any> => {
-        console.log(`[userBusiness]: [createImage]:`)
+        // console.log(`[userBusiness]: [createImage]:`)
         try {
             const token = data.token
             const user = await userBusiness.validateUser(token)
@@ -46,7 +46,7 @@ class ImageBusiness {
 
 
     public createTag = async (tags: any):Promise<void> => {
-        console.log(`[userBusiness]: [createTag]:`)
+        // console.log(`[userBusiness]: [createTag]:`)
         if (tags.length) {
             const newTags = tags.map((tag:string) => {
                 const id:string = services.generateId()
@@ -66,7 +66,7 @@ class ImageBusiness {
 
 
     public createImageTag = async (data: any):Promise<void> => {
-        console.log(`[userBusiness]: [createImageTag]:`)
+        // console.log(`[userBusiness]: [createImageTag]:`)
         const {image_id, tags} = data
 
         if (tags.length) {

@@ -8,6 +8,8 @@ import { getImages } from '../../store/Images/Images.actions'
 import { removeAcento } from '../../hooks/RemoveAcento'
 import { Card } from '../../components/Card/Card'
 import { CardPageContainer } from '../../components/CardPageContainer/style'
+import { NoCollections } from './NoCollec'
+import { Loading } from '../../components/Loading/Loading'
 
 export const CollecContainer = () => {
     const [modal, setModal] = useState(null)
@@ -16,8 +18,9 @@ export const CollecContainer = () => {
 
 
     const imagesBd = useSelector(state => state.images)
+    console.log('CollecContainer: imagesBd:', imagesBd)
     const dispatch = useDispatch()
-    if (!imagesBd) {dispatch(getImages())}
+    // if (!imagesBd) {dispatch(getImages())}
     const searchText = useSelector(state => state.searchBar)
 
     //  rotina para inserir em cada imagem todas as suas tags
@@ -102,7 +105,7 @@ export const CollecContainer = () => {
     }
 
 
-    const collectionCards = collections.length && collections.map((collection, index) => {
+    const collectionCards = collections.length ? collections.map((collection, index) => {
         const {name, images} = collection
         const coverImage = images[0]
         const formatName = removeAcento(name.toLowerCase())
@@ -117,6 +120,8 @@ export const CollecContainer = () => {
 
         }
     })
+    :
+    ''
 
 
     const imageCards = showCollection && showCollection.images.map((image, index) => {
@@ -125,10 +130,16 @@ export const CollecContainer = () => {
     })
 
 
+    useEffect(() => {
+        dispatch(getImages())
+    }, [])
 
     return (
         <PageContainer>
-            <SearchBar placeholder='nome da coleção...'/>
+            {/* {imagesBd === false ? <Loading/> : ''} */}
+            {imagesBd === false ? <Loading/> : !collections.length && <NoCollections/>}
+            {/* {!collections.length && <NoCollections/>} */}
+            {collections.length ? <SearchBar placeholder='nome da coleção...'/> : ''}
 
             {modal !== null && <ImageModal images={images} setModal={setModal} index={modal} />}
 
